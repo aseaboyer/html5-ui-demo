@@ -25,26 +25,34 @@ body {
 	padding:0;
 	width:100%;
 }
-#healthWrapper {
-	background-color:rgba( 1, 1, 1, 0.5);
+#playerPlate {
 	border:2px solid rgba( 1, 1, 1, 1);
-	height:30px;
+	border-radius:5px;
 	left:20px;
 	position:absolute;
 	top:20px;
+}
+#namePlate {
+	text-align:center;
+	width:100%
+	z-index:100;
+}
+#healthWrapper {
+	background-color:rgba( 1, 1, 1, 0.5);
+	border-top:2px solid rgba( 1, 1, 1, 1);
+	height:30px;
 	width:200px;
 }
 #healthbar {
 	background-color:#800;
-	height:100%;
+	background-image: linear-gradient( #800, #900, #700, #700 );
+	height:30px;
 	position:absolute;
-	top:0;
 	transition:width 0.5s, background-color 0.2s;
 	transition-timing-function:ease-in;
-	width:100%;
 }
 #healthbar.activeShield {
-	background-color:#66e;
+	background-color:#696;
 }
 #healthbarText {
 	height:30px;
@@ -56,6 +64,32 @@ body {
 	right:5px;
 	top:0;
 }
+#manaWrapper {
+	background-color:rgba( 1, 1, 1, 0.5);
+	border-top:2px solid rgba( 1, 1, 1, 1);
+	height:20px;
+	width:200px;
+}
+#manabar {
+	background-color:#66e;
+	background-image: linear-gradient( #66e, #77f, #66e, #55c );
+	height:20px;
+	position:absolute;
+	transition:width 0.5s, background-color 0.2s;
+	transition-timing-function:ease-in;
+	width:100%;
+}
+#manabarText {
+	height:30px;
+	line-height:30px;
+	position:relative;
+	text-align:right;
+	transition:width 0.5s;
+	transition-timing-function:ease-in;
+	right:5px;
+	top:0;
+}
+
 .actionBars {
 	background-color:#333;
 	position:absolute;
@@ -86,6 +120,7 @@ body {
 }
 .actionButton:hover {
 	color:#000;
+	text-shadow:-1px -1px 3px #666;
 }
 
 /* Images from: http://www.iconarchive.com/show/legendora-icons-by-raindropmemory.html */
@@ -103,10 +138,16 @@ body {
 <body>
 	<div id="guiLayer">
 		<div id="playerPlate">
+			<div id="namePlate">Player Name</div>
 			<div id="healthWrapper">
 				<div id="healthbar"></div>
 				<div id="healthbarEffect"></div>
 				<div id="healthbarText">100</div>
+			</div>
+			<div id="manaWrapper">
+				<div id="manabar"></div>
+				<div id="manaEffect"></div>
+				<div id="manaText">100</div>
 			</div>
 		</div>
 	</div>
@@ -171,6 +212,7 @@ body {
 		abilities: {
 		
 		},
+		target: player,
 		addShield: function( val ) {
 			if( val > this.health.shield ) { this.health.shield = val; }
 		},
