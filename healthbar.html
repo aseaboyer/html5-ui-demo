@@ -46,7 +46,7 @@ body {
 #healthbar.activeShield {
 	background-color:#66e;
 }
-#healthbar-text {
+#healthbarText {
 	height:30px;
 	line-height:30px;
 	position:relative;
@@ -56,14 +56,47 @@ body {
 	right:5px;
 	top:0;
 }
-
-#center-buttons {
+.actionBars {
+	background-color:#333;
 	position:absolute;
-	margin:200px;
-	top:0;
 }
-#center-buttons>a {
-	margin:0 auto;
+#primaryActionBar {
+	bottom:0;
+	width:100%;
+}
+#primaryActionBar .actionBarInner {
+	margin:0 100px;
+	position:relative;
+	top:-15px;
+}
+.actionButton {
+	background-color:#999;
+	border:2px solid #666;
+	border-radius:5px;
+	color:transparent;
+	cursor:pointer;
+	float:left;
+	font-size:0.9em;
+	height:46px;
+	line-height:70px;
+	margin:4px;
+	text-align:center;
+	transition:color 0.2s;
+	width:46px;
+}
+.actionButton:hover {
+	color:#000;
+}
+
+/* Images from: http://www.iconarchive.com/show/legendora-icons-by-raindropmemory.html */
+.actionButton#damage {
+	background-image:url( 'images/sword-icon.png' );
+}
+.actionButton#heal {
+	background-image:url( 'images/potion-icon.png' );
+}
+.actionButton#shield {
+	background-image:url( 'images/shield-icon.png' );
 }
 </style>
 </head>
@@ -72,16 +105,18 @@ body {
 		<div id="playerPlate">
 			<div id="healthWrapper">
 				<div id="healthbar"></div>
-				<div id="healthbar-effect"></div>
-				<div id="healthbar-text">100</div>
+				<div id="healthbarEffect"></div>
+				<div id="healthbarText">100</div>
 			</div>
 		</div>
 	</div>
 	
-	<div id="center-buttons">
-		<a href="#" id="damage">damage</a>
-		<a href="#" id="heal">heal</a>
-		<a href="#" id="shield">shield</a>
+	<div class="actionBars" id="primaryActionBar">
+		<div class="actionBarInner">
+			<div class="actionButton" id="damage">damage</a></div>
+			<div class="actionButton" id="heal">heal</a></div>
+			<div class="actionButton" id="shield">shield</a></div>
+		</div>
 	</div>
 	
 <script src="js/jquery-2.1.1.min.js"></script>
@@ -93,7 +128,7 @@ body {
 			health: {
 				wrapper: jQuery( "#healthWrapper" ),
 				bar: jQuery( "#healthbar" ),
-				text: jQuery( "#healthbar-text" ),
+				text: jQuery( "#healthbarText" ),
 				resize: function( perc ) {
 					this.bar.css( 'width', perc+"%" );
 					this.text.css( 'width', perc+"%" );
@@ -132,6 +167,9 @@ body {
 				console.log( this );
 				this.changed = true;
 			},
+		},
+		abilities: {
+		
 		},
 		addShield: function( val ) {
 			if( val > this.health.shield ) { this.health.shield = val; }
