@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>health bar demo</title>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/health.css">
+<style>
+body {
+	/*background:url(woodsBG.jpg) no-repeat center center fixed; */
+		-webkit-background-size:cover;
+		-moz-background-size:cover;
+		-o-background-size:cover;
+		background-size:cover;
+	font-family:'Roboto Condensed', sans-serif;
+	height:100%;
+	margin:0;
+	overflow:hidden; /* disable when adding new features */
+	padding:0;
+	width:100%;
+}
+#guiLayer {
+	background-color:rgba( 1, 1, 1, 0.1);
+	height:100%;
+	margin:0;
+	padding:0;
+	width:100%;
+}
+#playerPlate {
+	border:2px solid rgba( 1, 1, 1, 1);
+	border-radius:5px;
+	left:20px;
+	position:absolute;
+	top:20px;
+}
+#namePlate {
+	text-align:center;
+	width:100%
+	z-index:100;
+}
+#healthWrapper {
+	background-color:rgba( 1, 1, 1, 0.5);
+	border-top:2px solid rgba( 1, 1, 1, 1);
+	height:30px;
+	width:200px;
+}
+#healthbar {
+	background-color:#800;
+	background-image: linear-gradient( #800, #900, #700, #700 );
+	height:30px;
+	position:absolute;
+	transition:width 0.5s, background-color 0.2s;
+	transition-timing-function:ease-in;
+}
+#healthbar.activeShield {
+	background-color:#696;
+	background-image: linear-gradient( #696, #7a7, #696, #696 );
+}
+#healthbarText {
+	height:30px;
+	line-height:30px;
+	position:relative;
+	text-align:right;
+	transition:width 0.5s;
+	transition-timing-function:ease-in;
+	right:5px;
+	top:0;
+}
+#manaWrapper {
+	background-color:rgba( 1, 1, 1, 0.5);
+	border-top:2px solid rgba( 1, 1, 1, 1);
+	height:20px;
+	width:200px;
+}
+#manabar {
+	background-color:#66e;
+	background-image: linear-gradient( #66e, #77f, #66e, #55c );
+	height:20px;
+	position:absolute;
+	transition:width 0.5s, background-color 0.2s;
+	transition-timing-function:ease-in;
+	width:100%;
+}
+#manabarText {
+	height:30px;
+	line-height:30px;
+	position:relative;
+	text-align:right;
+	transition:width 0.5s;
+	transition-timing-function:ease-in;
+	right:5px;
+	top:0;
+}
+
+.actionBars {
+	background-color:#333;
+	position:absolute;
+}
+#primaryActionBar {
+	bottom:0;
+	width:100%;
+}
+#primaryActionBar .actionBarInner {
+	margin:0 100px;
+	position:relative;
+	top:-15px;
+}
+.actionButton {
+	background-color:#999;
+	border:2px solid #666;
+	border-radius:5px;
+	color:transparent;
+	cursor:pointer;
+	float:left;
+	font-size:0.9em;
+	height:46px;
+	line-height:70px;
+	margin:4px;
+	text-align:center;
+	transition:color 0.2s;
+	width:46px;
+}
+.actionButton:hover {
+	color:#000;
+	text-shadow:-1px -1px 3px #666;
+}
+
+#character {
+	top:50%;
+	position:absolute;
+	left:-310px;
+	width:300px;
+	transition:left 0.5s;
+}
+#character.open {
+	left:10px;
+}
+
+#bags {
+	bottom:10px;
+	position:absolute;
+	right:-310px;
+	transition:right 0.5s;
+}
+#bags.open {
+	right:10px;
+}
+.bag {
+	background-color:#999;
+	border:3px solid #999;
+	border-radius:5px;
+	width:300px;
+	height:300px;
+	overflow:scroll;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+.bag ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+.bag ul li {
+	display:block;
+	margin:0;
+	padding:0;
+}
+.bag ul li span.icon {
+	min-width:10%;
+}
+.bag ul li span.name {
+	float:right;
+	min-width:65%;
+}
+.bag ul li span.number {
+	float:right;
+	min-width:10%;
+	padding-right:5px;
+	text-align:right;
+}
+.bag ul li span.cost {
+	float:right;
+	min-width:15%;
+}
+.bag li:nth-child(odd) {
+	background-color:#aaa;
+}
+.bag li.bagHeading {
+	background-color:#333;
+	border-radius:5px;
+	color:#eee;
+}
+
+/* Images from: http://www.iconarchive.com/show/legendora-icons-by-raindropmemory.html */
+.actionButton#damage {
+	background-image:url( 'images/sword-icon.png' );
+}
+.actionButton#heal {
+	background-image:url( 'images/potion-icon.png' );
+}
+.actionButton#shield {
+	background-image:url( 'images/shield-icon.png' );
+}
+</style>
+</head>
+<body>
+	<div id="guiLayer">
+		<div id="playerPlate">
+			<div id="namePlate">Player Name</div>
+			<div id="healthWrapper">
+				<div id="healthbar"></div>
+				<div id="healthbarEffect"></div>
+				<div id="healthbarText">100</div>
+			</div>
+			<div id="manaWrapper">
+				<div id="manabar"></div>
+				<div id="manaEffect"></div>
+				<div id="manaText">100</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="actionBars" id="primaryActionBar">
+		<div class="actionBarInner">
+			<div class="actionButton" id="damage">damage</a></div>
+			<div class="actionButton" id="heal">heal</a></div>
+			<div class="actionButton" id="shield">shield</a></div>
+		</div>
+	</div>
+	
+	<div id="character">
+		<div class="characterWindow">
+			<ul id="equipmentSlots">
+				<li class='equipmentSlot' id='headSlot'></li>
+				<li class='equipmentSlot' id='shoulderslot'></li>
+				<li class='equipmentSlot' id='bodySlot'></li>
+				<li class='equipmentSlot' id='rightHandSlot'></li>
+				<li class='equipmentSlot' id='leftHandSlot'></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="bags">
+		<div class="bag">
+			<ul>
+				<li class='bagHeading'>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">#</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+				<li>
+					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+<script src="js/jquery-2.1.1.min.js"></script>
+<script>
+	var und;
+	var GUI = {
+		objects: {
+			wrapper: jQuery( "#guiLayer" ),
+			health: {
+				wrapper: jQuery( "#healthWrapper" ),
+				bar: jQuery( "#healthbar" ),
+				text: jQuery( "#healthbarText" ),
+				resize: function( perc ) {
+					this.bar.css( 'width', perc+"%" );
+					this.text.css( 'width', perc+"%" );
+				},
+				update: function( perc, val, sh ) {
+					if( sh > 0 ) {
+						this.bar.addClass( "activeShield" );
+					} else {
+						this.bar.removeClass( "activeShield" );
+					}
+					this.bar.css( 'width', perc+"%" );
+					this.text.css( 'width', perc+"%" ).text( val );
+				},
+			},
+		},
+		resizeWrapper: function() {
+			this.objects.wrapper.css( 'width', window.innerWidth ).css( 'height', window.innerHeight );
+		},
+		toggleBags: function( bagObj ) {
+			bagObj.toggleClass( 'open' );
+		},
+		toggleCharacter: function( charWindow ) {
+			charWindow.toggleClass( 'open' );
+		},
+	};
+	
+	var log = {
+		messages: [],
+		addMessage: function() {
+		
+		},
+	};
+	
+	function Item ( n, c, v ) {
+		return {
+			name: n,
+			cost: c,
+			count: v
+		}
+	};
+	
+	var player = {
+		health: {
+			current: 100,
+			max: 100,
+			currentPercent: 100,
+			shield: 0,
+			update: function() {
+				this.currentPercent = this.current / this.max * 100;
+				console.log( this );
+				this.changed = true;
+			},
+		},
+		abilities: {
+		
+		},
+		target: player,
+		addShield: function( val ) {
+			if( val > this.health.shield ) { this.health.shield = val; }
+		},
+		damage: function( val, type ) {
+			console.log( "The player took " + val + " " + type + " damage!" );
+			
+			if( this.health.shield > 0 ) { //check for shield first
+				this.health.shield -= val;
+				if( this.health.shield <= 0 ) {
+					val = -(this.health.shield);
+					this.health.shield = 0;
+				}
+			}
+			
+			this.health.current -= val;
+			
+			if( this.health.current <= 0 ) {
+				this.health.current = 0;
+				console.log( "The player has died!" );
+			}
+			this.health.update();
+		},
+		heal: function( val, type ) {
+			console.log( "The player recieved " + val + " health!" );
+			this.health.current += val;
+			if( this.health.current > this.health.max ) { this.health.current = this.health.max; }
+			this.health.update();
+		},
+		inventory: {
+			items: [],
+			add: function ( item ) {
+				// search item list for same items
+			},
+			
+			remove: function ( item ) {
+				// search item list for same items
+			},
+			equip: function ( itemName ) {
+				// search item list for same items and flip a flag
+			},
+			unequip: function ( itemName ) {
+				// search item list for same items and flip a flag
+			},
+		},
+	};
+	
+	function update( ) {
+		GUI.objects.health.update( player.health.currentPercent, player.health.current, player.health.shield );
+	}
+	
+	function draw( canv ) {
+	
+	}
+	
+	function init() {
+		GUI.resizeWrapper();
+	}
+	
+	function animate() {
+		requestAnimationFrame( animate );
+		
+		update( );
+		draw( );
+	}
+	
+	init();
+	animate();
+	
+	window.onresize = resize;
+	function resize() {
+		GUI.resizeWrapper();
+	}
+	
+	$( "#damage" ).click(function( event ){
+		event.preventDefault();
+		player.damage( 20, 'physical' );
+	});
+	$( "#heal" ).click(function( event ){
+		event.preventDefault();
+		player.heal( 20 );
+	});
+	$( "#shield" ).click(function( event ){
+		event.preventDefault();
+		player.addShield( 15 );
+	});
+	
+	$( "body" ).keydown(function( event ){
+		//console.log( event.keyCode );
+		if( event.keyCode == 66 ) {
+			GUI.toggleBags( jQuery( "#bags" ) );
+		}
+		if( event.keyCode == 67 ) {
+			GUI.toggleCharacter( jQuery( "#character" ) );
+		}
+	});
+	
+	// @andymakesthings - watch for changes to the player.inventory 
+</script>
+</body>
+</html>
