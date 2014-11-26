@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>health bar demo</title>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/health.css">
+<style>
+body {
+	background-color:#d9d9d9;
+	height:100%;
+	margin:0;
+	padding:0;
+	width:100%;
+}
+
+#hearts-healthbar {
+	display:block;
+	margin:0 auto;
+}
+#hearts-healthbar ul {
+	background-color:#fff;
+	border-radius:25px;
+	display:inline;
+	list-style-type:none;
+	margin:20px;
+	padding:0 10px;
+}
+#hearts-healthbar li {
+	color:#666;
+	display:inline-block;
+	font-size:20px;
+	line-height:40px;
+	margin:10px;
+	padding:0;
+	transition:font-size 300ms;
+}
+#hearts-healthbar li.filled {
+	color:#900;
+	font-size:40px;
+}
+
+#controls li {
+	background-color:#fff;
+	border-radius:10px;
+	display:inline-block;
+	padding:10px;
+}
+#controls li:hover {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	background-color:#ccc;
+	cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div id="controls">
+	<ul>
+		<li id="add">Add</li>
+		<li id="hurt">Hurt</li>
+	</ul>
+</div>
+<div id="hearts-healthbar">
+	<ul>
+	</ul>
+</div>
+	
+<script src="js/jquery-2.1.1.min.js"></script>
+<script>
+	var und;
+	var player = {
+		current: 5,
+		max: 5,
+		add: function() {
+			if( this.current < this.max ) {
+				this.current++;
+				this.update();
+			}
+		},
+		remove: function() {
+			if( this.current > 0 ) {
+				this.current--;
+				this.update();
+			}
+		},
+		update: function() {
+			thisO = this;
+			console.log( thisO.current );
+			
+			jQuery.each( jQuery( "#hearts-healthbar ul li" ), function( k, v ) {
+				if ( k < thisO.current ) {
+					jQuery( this ).addClass( "filled" );
+				} else {
+					jQuery( this ).removeClass( "filled" );
+				}
+			});
+		},
+		init: function( startingHeart ) {
+			this.current = startingHeart;
+			this.max = startingHeart;
+			for( var x = 0; x < startingHeart; x++ ) {
+				jQuery( "#hearts-healthbar ul" ).append( jQuery( "<li>" ).addClass( "filled" ).html( "&hearts;" ) );
+			}
+		},
+	};
+	
+	$( "#add" ).click(function( event ){
+		event.preventDefault();
+		player.add( );
+	});
+	
+	$( "#hurt" ).click(function( event ){
+		event.preventDefault();
+		player.remove( );
+	});
+	
+	player.init( 6 );
+</script>
+</body>
+</html>

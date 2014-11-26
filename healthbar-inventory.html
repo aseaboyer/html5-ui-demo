@@ -191,6 +191,30 @@ body {
 	color:#eee;
 }
 
+#logs {
+	background-color:#999;
+	border:3px solid #999;
+	border-radius:5px;
+	bottom:85px;
+	left:10px;
+	position:absolute;
+	width:30%;
+}
+#logs #addMessage {
+	border-radius:5px;
+	width:99%;
+}
+#logs>ul{
+	height:140px;
+	max-height:140px;
+	overflow:scroll;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+#logs #logChat, #logs #addMessage {			/* for chat log later */
+	display:none;
+}
+
 /* Images from: http://www.iconarchive.com/show/legendora-icons-by-raindropmemory.html */
 .actionButton#damage {
 	background-image:url( 'images/sword-icon.png' );
@@ -270,6 +294,15 @@ body {
 			</ul>
 		</div>
 	</div>
+	<div id="logs">
+		<div id="logControls">
+			<span class="logCombat">Combat</span>
+			<span class="logChat">Chat</span>
+		</div>
+		<ul id='logCombat'></ul>
+		<ul id='logChat'></ul>
+		<input type="text" name="addMessage" id="addMessage" />
+	</div>
 	
 <script src="js/jquery-2.1.1.min.js"></script>
 <script>
@@ -305,6 +338,18 @@ body {
 		toggleCharacter: function( charWindow ) {
 			charWindow.toggleClass( 'open' );
 		},
+		log: {
+			combatWindow: jQuery( "#logCombat" ),
+			chatWindow: jQuery( "#logChat" ),
+			addMessage: function( text ) {
+				var newLog = jQuery( "<li>" ).addClass( "damage" ).html( text );
+				this.combatWindow.append( newLog );
+				this.scroll( this.combatWindow, this.combatWindow[0].scrollHeight );
+			},
+			scroll: function( win, ammount ) {
+				win.scrollTop( ammount );
+			},
+		},
 	};
 	
 	var log = {
@@ -330,7 +375,7 @@ body {
 			shield: 0,
 			update: function() {
 				this.currentPercent = this.current / this.max * 100;
-				console.log( this );
+				//console.log( this );
 				this.changed = true;
 			},
 		},
@@ -340,9 +385,10 @@ body {
 		target: player,
 		addShield: function( val ) {
 			if( val > this.health.shield ) { this.health.shield = val; }
+			GUI.log.addMessage( "The player was shielded against " + val + " damage." );
 		},
 		damage: function( val, type ) {
-			console.log( "The player took " + val + " " + type + " damage!" );
+			//console.log( "The player took " + val + " " + type + " damage!" );
 			
 			if( this.health.shield > 0 ) { //check for shield first
 				this.health.shield -= val;
@@ -354,17 +400,26 @@ body {
 			
 			this.health.current -= val;
 			
+			GUI.log.addMessage( "The player was took " + val + " damage." );
+			
 			if( this.health.current <= 0 ) {
 				this.health.current = 0;
-				console.log( "The player has died!" );
+				//console.log( "The player has died!" );
 			}
 			this.health.update();
 		},
 		heal: function( val, type ) {
-			console.log( "The player recieved " + val + " health!" );
+			//console.log( "The player recieved " + val + " health!" );
+			var msg = "The player was healed for " + val + " health.";
+			
 			this.health.current += val;
-			if( this.health.current > this.health.max ) { this.health.current = this.health.max; }
+			if( this.health.current > this.health.max ) {
+				msg += " (" + ( this.health.current - this.health.max ) + " overhealed)"; 
+				this.health.current = this.health.max;
+			}
 			this.health.update();
+			
+			GUI.log.addMessage( msg );
 		},
 		inventory: {
 			items: [],
@@ -434,7 +489,19 @@ body {
 		}
 	});
 	
-	// @andymakesthings - watch for changes to the player.inventory 
+	// Watch for changes and notify UI
+	Object.observe( player.health, healthUpdate );
+	function healthUpdate( changes ) {			// *** Update Player Health
+		console.log( 'health changed' );
+		console.log( changes );
+		// @aseaboyer - update the GUI from here
+	}
+	Object.observe( player.inventory, inventoryUpdate );
+	function inventoryUpdate( changes ) {			// *** Update Player Inventory
+		console.log( 'inventory changed' );
+		console.log( changes );
+		// @aseaboyer - update the GUI from here
+	}
 </script>
 </body>
 </html>
