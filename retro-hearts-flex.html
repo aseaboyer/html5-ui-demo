@@ -19,25 +19,28 @@ body {
 	margin:0 auto;
 }
 #hearts-healthbar ul {
-	/*background-color:#fff;*/
-	border-radius:25px;
-	display:inline;
+	background-color:#fff;
+	border-radius:10px;
+	display:flex;
 	list-style-type:none;
 	margin:20px;
 	padding:0 10px;
+	width:300px;
 }
 #hearts-healthbar li {
 	color:rgba( 128, 0, 0, 0.6 );
 	display:inline;
-	font-size:2.6em;
-	line-height:3em;
+	font-size:2em;
+	line-height:1.5em;
 	margin:10px;
 	padding:0;
-	transition:color 300ms, font-size 300ms;
+	transition:color 300ms, font-size 300ms, line-height 300ms;
+	width:20%;
 }
 #hearts-healthbar li.filled {
 	color:rgba( 128, 0, 0, 1 );
 	font-size:3em;
+	line-height:1em;
 }
 
 #controls li {

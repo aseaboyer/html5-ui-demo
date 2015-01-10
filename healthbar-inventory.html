@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>health bar demo</title>
+<title>MMO UI demo</title>
 <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/health.css">
 <style>
@@ -29,9 +29,20 @@ body {
 #playerPlate {
 	border:2px solid rgba( 1, 1, 1, 1);
 	border-radius:5px;
-	left:20px;
+	left:100px;
 	position:absolute;
 	top:20px;
+	z-index:3;
+}
+#playerPlate .photo {
+	border:2px solid rgba( 1, 1, 1, 1);
+	border-radius:10px 0 10px 10px;
+	height:80px;
+	left: -83px;
+	position: absolute;
+	top:-2px;
+	width:80px;
+	z-index: 2;
 }
 #namePlate {
 	text-align:center;
@@ -109,6 +120,9 @@ body {
 	background-color:#999;
 	border:2px solid #666;
 	border-radius:5px;
+		-moz-box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.4 );
+		-webkit-box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.4 );
+	box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.4 );
 	color:transparent;
 	cursor:pointer;
 	float:left;
@@ -121,19 +135,84 @@ body {
 	width:46px;
 }
 .actionButton:hover {
+		-moz-box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.8 );
+		-webkit-box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.8 );
+	box-shadow: inset 0 0 3px 3px rgba( 80, 80, 80, 0.8 );
 	color:#000;
-	text-shadow:-1px -1px 3px #666;
+	text-shadow:-1px -1px 3px rgba( 102, 102, 102, 1);
 }
 
 #character {
-	top:50%;
+	background-color:#999;
+	border:3px solid #999;
+	border-radius:5px;
+	height:300px;
+	top:140px;
 	position:absolute;
 	left:-310px;
 	width:300px;
 	transition:left 0.5s;
+	z-index:5;
 }
 #character.open {
 	left:10px;
+}
+#equipmentSlots {
+	z-index:5;
+}
+li.equipmentSlot {
+	background-color:#ccc;
+	border:3px solid #333;
+	border-radius:5px;
+	display:block;
+	list-style-type:none;
+	position: absolute;
+	height:50px;
+	width:50px;
+}
+li.equipmentSlot#headSlot {
+	top:20px;
+	left:40%;
+}
+li.equipmentSlot#shoulderSlot {
+	top:80px;
+	left:40px;
+}
+li.equipmentSlot#bodySlot {
+	top:90px;
+	left:40%;
+}
+li.equipmentSlot#legSlot {
+	top:160px;
+	left:40%;
+}
+li.equipmentSlot#handSlot {
+	top:80px;
+	right:40px;
+}
+li.equipmentSlot#leftHandSlot {
+	bottom:20px;
+	right:20px;
+}
+li.equipmentSlot#rightHandSlot {
+	bottom:20px;
+	left:20px;
+}
+#character .stats {
+	background-color:#666;
+	left:0;
+	padding:20px;
+	position:relative;
+	transition:left 0.5s;
+	top:0%;
+	z-index:4;
+}
+#character.open .stats {
+	position:relative;
+	left:303px;
+}
+#character .stats h2 {
+	margin-left:20px;
 }
 
 #bags {
@@ -141,6 +220,7 @@ body {
 	position:absolute;
 	right:-310px;
 	transition:right 0.5s;
+	z-index:5;
 }
 #bags.open {
 	right:10px;
@@ -164,6 +244,10 @@ body {
 	display:block;
 	margin:0;
 	padding:0;
+}
+.bag ul li.item:hover {
+	background-color:#ccc;
+	cursor:pointer;
 }
 .bag ul li span.icon {
 	min-width:10%;
@@ -200,6 +284,7 @@ body {
 	left:10px;
 	position:absolute;
 	width:30%;
+	z-index:2;
 }
 #logs:hover {
 	opacity:1
@@ -215,8 +300,24 @@ body {
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
+#logs li.damage .highlight {
+	color:#9ff;
+}
+#logs li.heal .highlight {
+	color:#f9f;
+}
+#logs li.shield .highlight {
+	color:#ff9;
+}
 #logs #logChat, #logs #addMessage {			/* for chat log later */
 	display:none;
+}
+
+#logControls>span:hover {
+	text-decoration:underline;
+}
+#logControls>span.active {
+	font-weight:bold;
 }
 
 /* Images from: http://www.iconarchive.com/show/legendora-icons-by-raindropmemory.html */
@@ -229,11 +330,23 @@ body {
 .actionButton#shield {
 	background-image:url( 'images/shield-icon.png' );
 }
+
+#instructions {
+	margin:0 auto;
+	padding:40px;
+	position:absolute;
+	top:200px;
+	width:100%;
+}
+#instructions p {
+	text-align:center;
+}
 </style>
 </head>
 <body>
 	<div id="guiLayer">
 		<div id="playerPlate">
+			<img src="images/photo.jpg" class="photo" />
 			<div id="namePlate">Player Name</div>
 			<div id="healthWrapper">
 				<div id="healthbar"></div>
@@ -259,12 +372,22 @@ body {
 	<div id="character">
 		<div class="characterWindow">
 			<ul id="equipmentSlots">
-				<li class='equipmentSlot' id='headSlot'></li>
-				<li class='equipmentSlot' id='shoulderslot'></li>
-				<li class='equipmentSlot' id='bodySlot'></li>
-				<li class='equipmentSlot' id='rightHandSlot'></li>
-				<li class='equipmentSlot' id='leftHandSlot'></li>
+				<li class='equipmentSlot actionButton' id='headSlot'>Helm</li>
+				<li class='equipmentSlot actionButton' id='shoulderSlot'>Shoulder</li>
+				<li class='equipmentSlot actionButton' id='bodySlot'>Chest</li>
+				<li class='equipmentSlot actionButton' id='legSlot'>Pants</li>
+				<li class='equipmentSlot actionButton' id='handSlot'>Gloves</li>
+				<li class='equipmentSlot actionButton' id='rightHandSlot'>Right</li>
+				<li class='equipmentSlot actionButton' id='leftHandSlot'>Left</li>
 			</ul>
+			<div class='stats'>
+				<h2>stats</h2>
+				<ul>
+					<li>Health: <span class='health'>100</span></li>
+					<li>Mana: <span class='mana'>100</span></li>
+					<li>speed: <span class='speed'>100</span></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 	
@@ -274,38 +397,23 @@ body {
 				<li class='bagHeading'>
 					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">#</span>
 				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
-				<li>
-					<span class="icon">&nbsp;</span><span class="cost">$</span><span class="name">Item Name</span><span class="number">&nbsp;</span>
-				</li>
 			</ul>
 		</div>
 	</div>
 	<div id="logs">
 		<div id="logControls">
-			<span class="logCombat">Combat</span>
+			<span class="logCombat active">Combat</span>
 			<span class="logChat">Chat</span>
 		</div>
 		<ul id='logCombat'></ul>
 		<ul id='logChat'></ul>
 		<input type="text" name="addMessage" id="addMessage" />
+	</div>
+	
+	<div id="instructions">
+		<p>Press "C" to open the character panel.</p>
+		<p>Press "B" to open the inventory.</p>
+		<p>Press "L" add some loot to the inventory.</p>
 	</div>
 	
 <script src="js/jquery-2.1.1.min.js"></script>
@@ -345,8 +453,8 @@ body {
 		log: {
 			combatWindow: jQuery( "#logCombat" ),
 			chatWindow: jQuery( "#logChat" ),
-			addMessage: function( text ) {
-				var newLog = jQuery( "<li>" ).addClass( "damage" ).html( text );
+			addMessage: function( text, type ) {
+				var newLog = jQuery( "<li>" ).addClass( type ).html( text );
 				this.combatWindow.append( newLog );
 				this.scroll( this.combatWindow, this.combatWindow[0].scrollHeight );
 			},
@@ -389,7 +497,7 @@ body {
 		target: player,
 		addShield: function( val ) {
 			if( val > this.health.shield ) { this.health.shield = val; }
-			GUI.log.addMessage( "The player was shielded against " + val + " damage." );
+			GUI.log.addMessage( "The player was shielded against <span class='highlight'>" + val + " damage</span>.", 'shield' );
 		},
 		damage: function( val, type ) {
 			//console.log( "The player took " + val + " " + type + " damage!" );
@@ -404,7 +512,7 @@ body {
 			
 			this.health.current -= val;
 			
-			GUI.log.addMessage( "The player was took " + val + " damage." );
+			GUI.log.addMessage( "The player recieved <span class='highlight'>" + val + " damage</span>.", 'damage' );
 			
 			if( this.health.current <= 0 ) {
 				this.health.current = 0;
@@ -414,21 +522,44 @@ body {
 		},
 		heal: function( val, type ) {
 			//console.log( "The player recieved " + val + " health!" );
-			var msg = "The player was healed for " + val + " health.";
+			var msg = "The player was healed for <span class='highlight'>" + val + " health</span>.";
 			
 			this.health.current += val;
 			if( this.health.current > this.health.max ) {
-				msg += " (" + ( this.health.current - this.health.max ) + " overhealed)"; 
+				msg += " (<span class='highlight'>" + ( this.health.current - this.health.max ) + " overhealed</span>)"; 
 				this.health.current = this.health.max;
 			}
 			this.health.update();
 			
-			GUI.log.addMessage( msg );
+			GUI.log.addMessage( msg, "heal" );
 		},
 		inventory: {
 			items: [],
-			add: function ( item ) {
+			bag: ".bag ul" ,
+			add: function ( itemName, num ) {
+				var und;
+				if( num == und ) { num = 1; }
 				// search item list for same items
+				var stackFound = false;
+				$( this.items ).each( function ( e ) {
+					if( this.name = itemName ) {
+						stackFound = true;
+						this.count++;
+						// update the UI number as well
+					}
+				});
+				
+				if( stackFound == false ) {
+					// if we don't find an existing item, create a new one
+					var newItem = item ( itemName, num );
+					this.items.push( newItem );
+					
+					// update the gui
+					var newInventoryUI = $( "<li class='item'><span class='icon'>&nbsp;</span><span class='cost'>$</span><span class='name'>" + itemName + "</span><span class='number'>" + num + "</span></li>" );
+					$( this.bag ).append( newInventoryUI );
+					//console.log($( this.bag ));
+				}
+				
 			},
 			
 			remove: function ( item ) {
@@ -442,6 +573,16 @@ body {
 			},
 		},
 	};
+	
+	function item (name, q, id ) {
+		var und;
+		if( q == und ) { q = 1; }
+		return {
+			'name': name,
+			'count': q,
+			'id': id
+		};
+	}
 	
 	function update( ) {
 		GUI.objects.health.update( player.health.currentPercent, player.health.current, player.health.shield );
@@ -482,6 +623,11 @@ body {
 		event.preventDefault();
 		player.addShield( 15 );
 	});
+	$( "#logControls>span" ).click(function( event ){
+		console.log( "Selected " + $( this ).text() + " view." );
+		$( "#logControls>span" ).removeClass( 'active' );
+		$( this ).addClass( 'active' );
+	});
 	
 	$( "body" ).keydown(function( event ){
 		//console.log( event.keyCode );
@@ -491,7 +637,19 @@ body {
 		if( event.keyCode == 67 ) {
 			GUI.toggleCharacter( jQuery( "#character" ) );
 		}
+		if( event.keyCode == 76 ) {
+			addRandomInventoryItem();
+		}
 	});
+	
+	function addRandomInventoryItem() { // populate the inventory
+		var itemNames = new Array( 'Cake', 'Leather Gloves', 'Tarnished helm', 'Pie', 'Health Potion' );
+		var itemName = itemNames[ Math.floor(Math.random() * (itemNames.length - 0)) + 0 ];
+		player.inventory.add( itemName, 1 );
+		
+		// @aseaboyer - need to create the ID mechanism - also, use the Object.observe instead
+		
+	}
 	
 	// Watch for changes and notify UI
 	Object.observe( player.health, healthUpdate );
@@ -500,7 +658,7 @@ body {
 		console.log( changes );
 		// @aseaboyer - update the GUI from here
 	}
-	Object.observe( player.inventory, inventoryUpdate );
+	Object.observe( player.inventory.items, inventoryUpdate );
 	function inventoryUpdate( changes ) {			// *** Update Player Inventory
 		console.log( 'inventory changed' );
 		console.log( changes );
