@@ -110,16 +110,8 @@ body {
 		},
 	};
 	
-	$( "#add" ).click(function( event ){
-		event.preventDefault();
-		player.add( );
-	});
-	
-	$( "#hurt" ).click(function( event ){
-		event.preventDefault();
-		player.remove( );
-	});
-	
+	$( "#add" ).click( function( event ){ player.add( ); });
+	$( "#hurt" ).click( function( event ){ player.remove( ); });
 	player.init( 6 );
 </script>
 </body>
