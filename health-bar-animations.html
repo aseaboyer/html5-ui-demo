@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>health bar animations</title>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/health.css">
+<style>
+body {
+	background-color:#d9d9d9;
+	font-family:'Roboto Condensed', sans-serif;
+	height:100%;
+	margin:0;
+	padding:0;
+	width:100%;
+}
+
+#bars {
+	display:block;
+	margin:0 auto;
+	width:400px;
+}
+
+.bar {
+	background-color:rgba( 128, 0, 0, 0.6 );
+	border:2px solid #666;
+	border-radius:5px;
+	color:#333;
+	margin:10px 0;
+	overflow:hidden;
+	padding:10px 0;
+	position:relative;
+	text-align:right;
+	width:100%;
+}
+.bar::after {
+	background-color:rgba( 0, 128, 0, 0.6 );
+	display:block;
+	color:transparent;
+	content:".";
+	left: 0;
+	margin:0;
+	padding:10px 0;
+	position: absolute;
+	top: 0;
+	width:100%;
+}
+#barNum1:after {
+	transition:width 200ms;
+}
+#barNum2:after {
+	transition:width 700ms;
+}
+#barNum3:after {
+	transition:width 500ms ease-out;
+}
+#barNum3:after {
+	transition:width 500ms ease-in;
+}
+#barNum4:after {
+	transition:width 500ms cubic-bezier(.7,0,.45,1);
+}
+#barNum5:after {
+	transition:width 500ms cubic-bezier(.4,1,.51,1);
+}
+
+#controls {
+	display:flex;
+	margin:0 auto;
+	padding:0;
+	width:400px;
+}
+
+#controls span {
+	line-height:3em;
+	margin:10px;
+	padding:0 10px;
+	text-align:center;
+	width:33%;
+}
+
+#changeVal input  {
+	background-color:#fff;
+	border-radius:5px;
+	padding:10px;
+}
+#add, #sub  {
+	background-color:#fff;
+	border-radius:5px;
+}
+#add:hover, #sub:hover {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	background-color:#ccc;
+	cursor:pointer;
+}
+</style>
+</head>
+<body>
+	<div id="controls">
+		<span id="sub">&laquo; Subtract</span>
+		<span id="changeVal"><input type="number" value="15" name="changeVal" min="1" max="33" /></span>
+		<span id="add">Add &raquo;</span>
+	</div>
+
+	<div id="bars">
+	</div>
+	
+<script src="js/jquery-2.1.1.min.js"></script>
+<script src="js/jquery.addrule.js"></script>
+<script>
+	var und;
+	
+	var health = {
+		current: 100,
+		max: 100,
+		add: function( changeVal ) {
+			if( this.current < this.max ) {
+				this.current += parseInt( changeVal );
+				if( this.current > 100 ) {
+				//	this.current = 100;
+				}
+				
+				this.update();
+			}
+		},
+		sub: function( changeVal ) {
+			if( this.current > 0 ) {
+				this.current -= parseInt( changeVal );
+				if( this.current < 0 ) {
+				//	this.current = 0;
+				}
+				
+				this.update();
+			}
+		},
+		update: function() {
+			console.log( this.current + "%" );
+			
+			//document.styleSheets[0].addRule( ".bar::after", "width:" + this.current + "% !important;" );
+			jQuery( ".bar" ).text( this.current + "%" );
+			jQuery(".bar::after").addRule( "width:" + this.current + "%;" );
+		},
+		init: function( cnt ) {
+			for( var x = 0; x < cnt; x++ ) {
+				jQuery( "#bars" ).append( jQuery( "<div>" ).addClass( "bar" ).attr( "id", "barNum" + x ).html( "." ) );
+			}
+			this.update();
+		},
+	};
+	
+	$( "#add" ).click(function( event ){
+		event.preventDefault();
+		health.add(jQuery( "#changeVal input" ).val() );
+	});
+	
+	$( "#sub" ).click(function( event ){
+		event.preventDefault();
+		health.sub( jQuery( "#changeVal input" ).val() );
+	});
+	
+	health.init( 6 );
+</script>
+</body>
+</html>
