@@ -6,6 +6,14 @@
 <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/health.css">
 <style>
+* {
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 body {
 	/*background:url(woodsBG.jpg) no-repeat center center fixed; */
 		-webkit-background-size:cover;
@@ -36,7 +44,7 @@ body {
 }
 #playerPlate .photo {
 	border:2px solid rgba( 1, 1, 1, 1);
-	border-radius:10px 0 10px 10px;
+	border-radius:50% 5% 5% 50%;
 	height:80px;
 	left: -83px;
 	position: absolute;
@@ -102,6 +110,31 @@ body {
 	right:5px;
 	top:0;
 }
+#levelDisplay {
+	background-color:rgba( 122, 122, 122, 1);
+	border-radius:20px;
+	border:2px solid rgba( 1, 1, 1, 1);
+	font-size:1.6rem;
+	height:30px;
+	left:-25px;
+	min-width:30px;
+	position:absolute;
+	text-align:center;
+	top:55px;
+	z-index:19;
+}
+	#levelDisplay:hover {
+		padding:0 10px;
+	}
+	#levelDisplay>span {
+		display:none;
+		font-size:1rem;
+		width:0;
+	}
+	#levelDisplay:hover>span {
+		display:inline;
+		width:auto;
+	}
 
 .actionBars {
 	background-color:#333;
@@ -109,6 +142,7 @@ body {
 }
 #primaryActionBar {
 	bottom:0;
+	height:80px;
 	width:100%;
 }
 #primaryActionBar .actionBarInner {
@@ -287,7 +321,7 @@ li.equipmentSlot#rightHandSlot {
 	z-index:2;
 }
 #logs:hover {
-	opacity:1
+	opacity:0.9;
 }
 #logs #addMessage {
 	border-radius:5px;
@@ -330,6 +364,30 @@ li.equipmentSlot#rightHandSlot {
 .actionButton#shield {
 	background-image:url( 'images/shield-icon.png' );
 }
+.actionButton#loot {
+	background-image:url( 'images/loot-icon.png' );
+}
+
+#experienceContainer {
+	position:absolute;
+	bottom:2px;
+	width:100%;
+}
+#experienceWrapper {
+	border:2px solid #999;
+	border-radius:10px;
+	color:#666;
+	margin:0 auto;
+	overflow:hidden;
+	width:90%;
+}
+#experienceBar {
+	background-image: linear-gradient( #66e, #77f, #66e, #55c );
+	background-color:#339;
+	border-radius:5px;
+	transition:width 500ms;
+	width:0;
+}
 
 #instructions {
 	margin:0 auto;
@@ -346,7 +404,7 @@ li.equipmentSlot#rightHandSlot {
 <body>
 	<div id="guiLayer">
 		<div id="playerPlate">
-			<img src="images/photo.jpg" class="photo" />
+			<img src="images/knightIcon.png" class="photo" />
 			<div id="namePlate">Player Name</div>
 			<div id="healthWrapper">
 				<div id="healthbar"></div>
@@ -358,6 +416,7 @@ li.equipmentSlot#rightHandSlot {
 				<div id="manaEffect"></div>
 				<div id="manaText">100</div>
 			</div>
+			<div id="levelDisplay"><span>Level: </span>1</div>
 		</div>
 	</div>
 	
@@ -366,6 +425,7 @@ li.equipmentSlot#rightHandSlot {
 			<div class="actionButton" id="damage">damage</a></div>
 			<div class="actionButton" id="heal">heal</a></div>
 			<div class="actionButton" id="shield">shield</a></div>
+			<div class="actionButton" id="loot">loot</a></div>
 		</div>
 	</div>
 	
@@ -408,6 +468,12 @@ li.equipmentSlot#rightHandSlot {
 		<ul id='logCombat'></ul>
 		<ul id='logChat'></ul>
 		<input type="text" name="addMessage" id="addMessage" />
+	</div>
+	
+	<div id="experienceContainer">
+		<div id="experienceWrapper">
+			<div id="experienceBar">&nbsp;</div>
+		</div>
 	</div>
 	
 	<div id="instructions">
@@ -478,6 +544,10 @@ li.equipmentSlot#rightHandSlot {
 			count: v
 		}
 	};
+	
+	var experienceLevels = [
+		0, 400, 1000, 2000, 3500, 8000, 1500, 3000, 6500, 1000000000
+	];
 	
 	var player = {
 		health: {
@@ -572,6 +642,18 @@ li.equipmentSlot#rightHandSlot {
 				// search item list for same items and flip a flag
 			},
 		},
+		experience: {
+			level: 1,
+			current: 0,
+			percent: 0,
+			nextLevel: 2000,
+			bar: jQuery( "#experienceBar" ),
+			add: function ( val ) {
+				this.current += val;
+				this.percent = (this.current / this.nextLevel ) * 100;
+				document.getElementById( "experienceBar" ).style.width = this.percent + '%';
+			},
+		},
 	};
 	
 	function item (name, q, id ) {
@@ -622,6 +704,11 @@ li.equipmentSlot#rightHandSlot {
 	$( "#shield" ).click(function( event ){
 		event.preventDefault();
 		player.addShield( 15 );
+	});
+	$( "#loot" ).click(function( event ){
+		event.preventDefault();
+		var randomExp = Math.floor((Math.random() * 120) + 70);
+		player.experience.add( randomExp );
 	});
 	$( "#logControls>span" ).click(function( event ){
 		console.log( "Selected " + $( this ).text() + " view." );
